@@ -24,6 +24,7 @@ import i18next from '@utils/i18n';
 import { sendTelemetry } from '@utils/sendTelemetry';
 import axios from 'axios';
 import { WAMessageContent, WAMessageKey } from 'baileys';
+import { ExtendedIMessageKey } from '../../channel/whatsapp/whatsapp.baileys.service';
 import dayjs from 'dayjs';
 import FormData from 'form-data';
 import { Jimp, JimpMime } from 'jimp';
@@ -39,6 +40,11 @@ interface ChatwootMessage {
   conversationId?: number;
   contactInboxSourceId?: string;
   isRead?: boolean;
+}
+
+interface MessageBodyWithExtendedKey {
+  key: ExtendedIMessageKey;
+  [key: string]: any;
 }
 
 export class ChatwootService {
@@ -629,7 +635,7 @@ export class ChatwootService {
     return filterPayload;
   }
 
-  public async createConversation(instance: InstanceDto, body: any) {
+  public async createConversation(instance: InstanceDto, body: MessageBodyWithExtendedKey) {
     const isLid = body.key.addressingMode === 'lid';
     const isGroup = body.key.remoteJid.endsWith('@g.us');
     const phoneNumber = isLid && !isGroup ? body.key.remoteJidAlt : body.key.remoteJid;

@@ -1,19 +1,17 @@
-FROM node:24-alpine AS builder
+FROM node:20-alpine AS builder
 
 RUN apk update && \
-    apk add --no-cache git ffmpeg wget curl bash openssl
+    apk add git ffmpeg wget curl bash
 
-LABEL version="2.3.1" description="Api to control whatsapp features through http requests." 
+LABEL version="2.2.0" description="Api to control whatsapp features through http requests." 
 LABEL maintainer="Davidson Gomes" git="https://github.com/DavidsonGomes"
-LABEL contact="contato@evolution-api.com"
+LABEL contact="contato@atendai.com"
 
 WORKDIR /evolution
 
-COPY ./package*.json ./
-COPY ./tsconfig.json ./
-COPY ./tsup.config.ts ./
+COPY ./package.json ./tsconfig.json ./
 
-RUN npm ci --silent
+RUN npm install -f
 
 COPY ./src ./src
 COPY ./public ./public
@@ -21,6 +19,7 @@ COPY ./prisma ./prisma
 COPY ./manager ./manager
 COPY ./.env.example ./.env
 COPY ./runWithProvider.js ./
+COPY ./tsup.config.ts ./
 
 COPY ./Docker ./Docker
 
@@ -28,15 +27,14 @@ RUN chmod +x ./Docker/scripts/* && dos2unix ./Docker/scripts/*
 
 RUN ./Docker/scripts/generate_database.sh
 
-RUN npm run build
+RUN ./node_modules/.bin/tsup
 
-FROM node:24-alpine AS final
+FROM node:20-alpine AS final
 
 RUN apk update && \
-    apk add tzdata ffmpeg bash openssl
+    apk add tzdata ffmpeg bash openssl openssl-dev libc6-compat
 
-ENV TZ=America/Sao_Paulo
-ENV DOCKER_ENV=true
+ENV TZ=America/Fortaleza
 
 WORKDIR /evolution
 
