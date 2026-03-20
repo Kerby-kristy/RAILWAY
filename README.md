@@ -70,6 +70,9 @@ Evolution API supports various integrations to enhance its functionality. Below 
 - [OpenAI](https://openai.com/):
   - Integrate your Evolution API with OpenAI for AI capabilities, including audio-to-text conversion, available across all Evolution integrations.
 
+- [MiniMax](https://www.minimaxi.com/):
+  - Integrate your Evolution API with MiniMax AI for chat completion capabilities using MiniMax M2.5 and M2.5-highspeed models via OpenAI-compatible API.
+
 - Amazon S3 / Minio:
   - Store media files received in [Amazon S3](https://aws.amazon.com/pt/s3/) or [Minio](https://min.io/).
 
