@@ -257,6 +257,13 @@ export class BaileysStartupService extends ChannelStartupService {
   private readonly MESSAGE_CACHE_TTL_SECONDS = 5 * 60; // 5 minutes - avoid duplicate message processing
   private readonly UPDATE_CACHE_TTL_SECONDS = 30 * 60; // 30 minutes - avoid duplicate status updates
 
+  // Reconnect behaviour for the Baileys "stream:error 515" sequence.
+  // After WhatsApp emits 515 it usually closes with `loggedOut`; that close is *not* a real logout
+  // and we should reconnect. We treat any close arriving within this grace window as 515-driven.
+  private static readonly STREAM_515_RECONNECT_GRACE_MS = 30_000;
+  // The numeric WhatsApp stream-error code that triggers the grace-period reconnect above.
+  private static readonly STREAM_ERROR_CODE_RECONNECT = '515';
+
   public stateConnection: wa.StateConnection = { state: 'close' };
 
   public phoneNumber: string;
@@ -427,7 +434,8 @@ export class BaileysStartupService extends ChannelStartupService {
     if (connection === 'close') {
       const statusCode = (lastDisconnect?.error as Boom)?.output?.statusCode;
       const codesToNotReconnect = [DisconnectReason.loggedOut, DisconnectReason.forbidden, 402, 406];
-      const recentStream515 = Date.now() - this._lastStream515At < 30_000;
+      const recentStream515 =
+        Date.now() - this._lastStream515At < BaileysStartupService.STREAM_515_RECONNECT_GRACE_MS;
       const shouldReconnect =
         !codesToNotReconnect.includes(statusCode) ||
         (statusCode === DisconnectReason.loggedOut && recentStream515);
@@ -719,8 +727,8 @@ export class BaileysStartupService extends ChannelStartupService {
       this.sendDataWebhook(Events.CALL, payload, true, ['websocket']);
     });
 
-    this.client.ws.on('CB:stream:error', (node: any) => {
-      if (node?.attrs?.code === '515') {
+    this.client.ws.on('CB:stream:error', (node: { attrs?: { code?: string | number } }) => {
+      if (String(node?.attrs?.code) === BaileysStartupService.STREAM_ERROR_CODE_RECONNECT) {
         this._lastStream515At = Date.now();
       }
     });
