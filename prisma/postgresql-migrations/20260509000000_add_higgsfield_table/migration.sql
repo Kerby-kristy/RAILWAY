@@ -6,6 +6,7 @@ CREATE TABLE "Higgsfield" (
     "serverUrl" VARCHAR(500) NOT NULL,
     "apiKey" VARCHAR(255),
     "toolName" VARCHAR(100),
+    "quality" VARCHAR(20),
     "expire" INTEGER DEFAULT 0,
     "keywordFinish" VARCHAR(100),
     "delayMessage" INTEGER,

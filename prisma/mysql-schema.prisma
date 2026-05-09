@@ -765,6 +765,7 @@ model Higgsfield {
   serverUrl          String             @db.VarChar(500)
   apiKey             String?            @db.VarChar(255)
   toolName           String?            @db.VarChar(100)
+  quality            String?            @db.VarChar(20)
   expire             Int?               @default(0)
   keywordFinish      String?            @db.VarChar(100)
   delayMessage       Int?

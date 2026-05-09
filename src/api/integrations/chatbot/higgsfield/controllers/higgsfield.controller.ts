@@ -49,6 +49,7 @@ export class HiggsfieldController extends BaseChatbotController<HiggsfieldModel,
       serverUrl: data.serverUrl,
       apiKey: data.apiKey,
       toolName: data.toolName,
+      quality: data.quality,
     };
   }
 
@@ -57,6 +58,7 @@ export class HiggsfieldController extends BaseChatbotController<HiggsfieldModel,
       serverUrl: data.serverUrl,
       apiKey: data.apiKey,
       toolName: data.toolName,
+      quality: data.quality,
     };
   }
 
