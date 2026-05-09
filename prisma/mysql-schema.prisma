@@ -111,6 +111,8 @@ model Instance {
   Evoai                   Evoai[]
   EvoaiSetting            EvoaiSetting?
   Pusher                  Pusher?
+  Higgsfield              Higgsfield[]
+  HiggsfieldSetting       HiggsfieldSetting?
 }
 
 model Session {
@@ -754,4 +756,53 @@ model EvoaiSetting {
   evoaiIdFallback String?   @db.VarChar(100)
   Instance        Instance  @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   instanceId      String    @unique
+}
+
+model Higgsfield {
+  id                 String             @id @default(cuid())
+  enabled            Boolean            @default(true) @db.Boolean
+  description        String?            @db.VarChar(255)
+  serverUrl          String             @db.VarChar(500)
+  apiKey             String?            @db.VarChar(255)
+  toolName           String?            @db.VarChar(100)
+  expire             Int?               @default(0)
+  keywordFinish      String?            @db.VarChar(100)
+  delayMessage       Int?
+  unknownMessage     String?            @db.VarChar(100)
+  listeningFromMe    Boolean?           @default(false) @db.Boolean
+  stopBotFromMe      Boolean?           @default(false) @db.Boolean
+  keepOpen           Boolean?           @default(false) @db.Boolean
+  debounceTime       Int?
+  ignoreJids         Json?
+  splitMessages      Boolean?           @default(false) @db.Boolean
+  timePerChar        Int?               @default(50)
+  triggerType        TriggerType?
+  triggerOperator    TriggerOperator?
+  triggerValue       String?
+  createdAt          DateTime?          @default(now()) @db.Timestamp
+  updatedAt          DateTime           @updatedAt @db.Timestamp
+  Instance           Instance           @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId         String
+  HiggsfieldSetting  HiggsfieldSetting[]
+}
+
+model HiggsfieldSetting {
+  id                    String      @id @default(cuid())
+  expire                Int?        @default(0)
+  keywordFinish         String?     @db.VarChar(100)
+  delayMessage          Int?
+  unknownMessage        String?     @db.VarChar(100)
+  listeningFromMe       Boolean?    @default(false) @db.Boolean
+  stopBotFromMe         Boolean?    @default(false) @db.Boolean
+  keepOpen              Boolean?    @default(false) @db.Boolean
+  debounceTime          Int?
+  ignoreJids            Json?
+  splitMessages         Boolean?    @default(false) @db.Boolean
+  timePerChar           Int?        @default(50)
+  createdAt             DateTime?   @default(now()) @db.Timestamp
+  updatedAt             DateTime    @updatedAt @db.Timestamp
+  Fallback              Higgsfield? @relation(fields: [higgsfieldIdFallback], references: [id])
+  higgsfieldIdFallback  String?     @db.VarChar(100)
+  Instance              Instance    @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId            String      @unique
 }
