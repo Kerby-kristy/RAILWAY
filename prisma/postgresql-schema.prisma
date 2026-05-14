@@ -106,6 +106,8 @@ model Instance {
   EvolutionBotSetting     EvolutionBotSetting?
   Flowise                 Flowise[]
   FlowiseSetting          FlowiseSetting?
+  Higgsfield              Higgsfield[]
+  HiggsfieldSetting       HiggsfieldSetting?
   Pusher                  Pusher?
   N8n                     N8n[]
   N8nSetting              N8nSetting[]
@@ -654,6 +656,54 @@ model FlowiseSetting {
   flowiseIdFallback String?   @db.VarChar(100)
   Instance          Instance  @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   instanceId        String    @unique
+}
+
+model Higgsfield {
+  id              String           @id @default(cuid())
+  enabled         Boolean          @default(true) @db.Boolean
+  description     String?          @db.VarChar(255)
+  apiUrl          String?          @db.VarChar(255)
+  apiKey          String?          @db.VarChar(255)
+  expire          Int?             @default(0) @db.Integer
+  keywordFinish   String?          @db.VarChar(100)
+  delayMessage    Int?             @db.Integer
+  unknownMessage  String?          @db.VarChar(100)
+  listeningFromMe Boolean?         @default(false) @db.Boolean
+  stopBotFromMe   Boolean?         @default(false) @db.Boolean
+  keepOpen        Boolean?         @default(false) @db.Boolean
+  debounceTime    Int?             @db.Integer
+  ignoreJids      Json?
+  splitMessages   Boolean?         @default(false) @db.Boolean
+  timePerChar     Int?             @default(50) @db.Integer
+  triggerType     TriggerType?
+  triggerOperator TriggerOperator?
+  triggerValue    String?
+  createdAt       DateTime?        @default(now()) @db.Timestamp
+  updatedAt       DateTime         @updatedAt @db.Timestamp
+  Instance        Instance         @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId      String
+  HiggsfieldSetting HiggsfieldSetting[]
+}
+
+model HiggsfieldSetting {
+  id                    String      @id @default(cuid())
+  expire                Int?        @default(0) @db.Integer
+  keywordFinish         String?     @db.VarChar(100)
+  delayMessage          Int?        @db.Integer
+  unknownMessage        String?     @db.VarChar(100)
+  listeningFromMe       Boolean?    @default(false) @db.Boolean
+  stopBotFromMe         Boolean?    @default(false) @db.Boolean
+  keepOpen              Boolean?    @default(false) @db.Boolean
+  debounceTime          Int?        @db.Integer
+  ignoreJids            Json?
+  splitMessages         Boolean?    @default(false) @db.Boolean
+  timePerChar           Int?        @default(50) @db.Integer
+  createdAt             DateTime?   @default(now()) @db.Timestamp
+  updatedAt             DateTime    @updatedAt @db.Timestamp
+  Fallback              Higgsfield? @relation(fields: [higgsfieldIdFallback], references: [id])
+  higgsfieldIdFallback  String?     @db.VarChar(100)
+  Instance              Instance    @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId            String      @unique
 }
 
 model IsOnWhatsapp {
