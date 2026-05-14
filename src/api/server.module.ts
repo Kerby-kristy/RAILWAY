@@ -28,6 +28,8 @@ import { EvolutionBotController } from './integrations/chatbot/evolutionBot/cont
 import { EvolutionBotService } from './integrations/chatbot/evolutionBot/services/evolutionBot.service';
 import { FlowiseController } from './integrations/chatbot/flowise/controllers/flowise.controller';
 import { FlowiseService } from './integrations/chatbot/flowise/services/flowise.service';
+import { HiggsfieldController } from './integrations/chatbot/higgsfield/controllers/higgsfield.controller';
+import { HiggsfieldService } from './integrations/chatbot/higgsfield/services/higgsfield.service';
 import { N8nController } from './integrations/chatbot/n8n/controllers/n8n.controller';
 import { N8nService } from './integrations/chatbot/n8n/services/n8n.service';
 import { OpenaiController } from './integrations/chatbot/openai/controllers/openai.controller';
@@ -131,6 +133,9 @@ export const evolutionBotController = new EvolutionBotController(evolutionBotSer
 
 const flowiseService = new FlowiseService(waMonitor, prismaRepository, configService, openaiService);
 export const flowiseController = new FlowiseController(flowiseService, prismaRepository, waMonitor);
+
+const higgsfieldService = new HiggsfieldService(waMonitor, prismaRepository, configService, openaiService);
+export const higgsfieldController = new HiggsfieldController(higgsfieldService, prismaRepository, waMonitor);
 
 const n8nService = new N8nService(waMonitor, prismaRepository, configService, openaiService);
 export const n8nController = new N8nController(n8nService, prismaRepository, waMonitor);
