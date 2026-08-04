@@ -1,12 +1,23 @@
 const STYLES: Record<string, string> = {
-  DRAFT: 'bg-slate-100 text-slate-700',
-  SUBMITTED: 'bg-blue-100 text-blue-700',
-  UNDER_REVIEW: 'bg-amber-100 text-amber-700',
+  DRAFT: 'bg-ink-100 text-ink-600',
+  SUBMITTED: 'bg-brand-100 text-brand-700',
+  UNDER_REVIEW: 'bg-gold-100 text-gold-800',
   APPROVED: 'bg-emerald-100 text-emerald-700',
   REJECTED: 'bg-red-100 text-red-700',
   VALID: 'bg-emerald-100 text-emerald-700',
   REVOKED: 'bg-red-100 text-red-700',
-  EXPIRED: 'bg-slate-200 text-slate-600',
+  EXPIRED: 'bg-ink-200 text-ink-600',
+};
+
+const DOT_STYLES: Record<string, string> = {
+  DRAFT: 'bg-ink-400',
+  SUBMITTED: 'bg-brand-500',
+  UNDER_REVIEW: 'bg-gold-500',
+  APPROVED: 'bg-emerald-500',
+  REJECTED: 'bg-red-500',
+  VALID: 'bg-emerald-500',
+  REVOKED: 'bg-red-500',
+  EXPIRED: 'bg-ink-400',
 };
 
 const LABELS: Record<string, string> = {
@@ -22,7 +33,8 @@ const LABELS: Record<string, string> = {
 
 export default function StatusBadge({ status }: { status: string }) {
   return (
-    <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${STYLES[status] || 'bg-slate-100 text-slate-700'}`}>
+    <span className={`badge ${STYLES[status] || 'bg-ink-100 text-ink-600'}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${DOT_STYLES[status] || 'bg-ink-400'}`} />
       {LABELS[status] || status}
     </span>
   );

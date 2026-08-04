@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db';
 import StatusBadge from '@/components/StatusBadge';
 import { QUESTIONNAIRE_ITEMS } from '@/lib/questionnaire';
 import { decideApplicationAction, markUnderReviewAction } from '@/actions/admin-actions';
+import { CheckCircleIcon, DocumentCheckIcon } from '@/components/icons';
 
 export default async function AdminApplicationDetailPage({
   params,
@@ -29,17 +30,23 @@ export default async function AdminApplicationDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      {error && <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+      )}
       {decided && (
-        <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Décision enregistrée.</div>
+        <div className="flex items-center gap-2.5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+          <CheckCircleIcon className="h-4 w-4 shrink-0" />
+          Décision enregistrée.
+        </div>
       )}
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <span className="eyebrow">Dossier n° {application!.id.slice(-8)}</span>
+          <h1 className="mt-1 text-2xl font-bold text-ink-900">
             {application!.type === 'COMPANY' ? application!.organizationName : application!.applicantName}
           </h1>
-          <p className="text-sm text-slate-600">
+          <p className="mt-1 text-sm text-ink-600">
             {application!.user.email} · {application!.type === 'COMPANY' ? 'Entreprise' : 'Particulier'}
           </p>
         </div>
@@ -47,19 +54,20 @@ export default async function AdminApplicationDetailPage({
       </div>
 
       <div className="card">
-        <h2 className="font-semibold text-slate-900">Périmètre déclaré</h2>
-        <p className="mt-1 text-sm text-slate-700">{application!.scopeDescription}</p>
+        <p className="section-title">Périmètre déclaré</p>
+        <p className="mt-2 text-sm text-ink-700">{application!.scopeDescription}</p>
       </div>
 
       <div className="card">
-        <h2 className="font-semibold text-slate-900">Documents fournis</h2>
+        <p className="section-title">Documents fournis</p>
         {documents.length === 0 ? (
-          <p className="mt-1 text-sm text-slate-500">Aucun document joint.</p>
+          <p className="mt-2 text-sm text-ink-500">Aucun document joint.</p>
         ) : (
-          <ul className="mt-2 space-y-1 text-sm text-slate-700">
+          <ul className="mt-3 space-y-1.5 text-sm text-ink-700">
             {documents.map((doc, i) => (
-              <li key={i}>
-                {doc.name} · {(doc.size / 1024).toFixed(1)} Ko
+              <li key={i} className="flex items-center justify-between">
+                <span>{doc.name}</span>
+                <span className="text-ink-400">{(doc.size / 1024).toFixed(1)} Ko</span>
               </li>
             ))}
           </ul>
@@ -67,14 +75,16 @@ export default async function AdminApplicationDetailPage({
       </div>
 
       <div className="card">
-        <h2 className="font-semibold text-slate-900">Auto-évaluation (score {application!.score} / {QUESTIONNAIRE_ITEMS.length * 2})</h2>
-        <ul className="mt-3 space-y-2 text-sm">
+        <p className="section-title">
+          Auto-évaluation — {application!.score} / {QUESTIONNAIRE_ITEMS.length * 2}
+        </p>
+        <ul className="mt-3 divide-y divide-ink-100 text-sm">
           {QUESTIONNAIRE_ITEMS.map((item) => (
-            <li key={item.id} className="border-b border-slate-100 pb-2">
-              <p className="text-xs uppercase tracking-wide text-slate-500">{item.domain}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-700">{item.companyLabel}</span>
-                <span className="font-medium text-slate-900">{answers[item.id]}</span>
+            <li key={item.id} className="py-2.5">
+              <p className="eyebrow">{item.domain}</p>
+              <div className="mt-1 flex items-center justify-between">
+                <span className="text-ink-700">{item.companyLabel}</span>
+                <span className="font-medium text-ink-900">{answers[item.id]}</span>
               </div>
             </li>
           ))}
@@ -83,7 +93,7 @@ export default async function AdminApplicationDetailPage({
 
       {isPending && (
         <div className="card space-y-4">
-          <h2 className="font-semibold text-slate-900">Décision de l&apos;auditeur</h2>
+          <p className="section-title">Décision de l&apos;auditeur</p>
 
           {application!.status === 'SUBMITTED' && (
             <form action={markUnderReviewAction}>
@@ -94,7 +104,7 @@ export default async function AdminApplicationDetailPage({
             </form>
           )}
 
-          <form action={decideApplicationAction} className="space-y-3">
+          <form action={decideApplicationAction} className="space-y-4">
             <input type="hidden" name="applicationId" value={application!.id} />
             <div>
               <label className="label" htmlFor="comment">
@@ -102,7 +112,7 @@ export default async function AdminApplicationDetailPage({
               </label>
               <textarea className="input" id="comment" name="comment" rows={3} />
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <button type="submit" name="decision" value="APPROVE" className="btn-primary">
                 Approuver et émettre le certificat
               </button>
@@ -115,9 +125,14 @@ export default async function AdminApplicationDetailPage({
       )}
 
       {application!.status === 'APPROVED' && application!.certificate && (
-        <div className="card border-emerald-200 bg-emerald-50 text-sm text-emerald-700">
-          Certificat {application!.certificate.certificateNumber} émis le{' '}
-          {new Date(application!.certificate.issueDate).toLocaleDateString('fr-FR')}.
+        <div className="card-tight flex items-center gap-3 border-emerald-200 bg-emerald-50/60 px-6 py-4">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+            <DocumentCheckIcon className="h-4.5 w-4.5" />
+          </span>
+          <p className="text-sm text-emerald-800">
+            Certificat <span className="font-mono">{application!.certificate.certificateNumber}</span> émis le{' '}
+            {new Date(application!.certificate.issueDate).toLocaleDateString('fr-FR')}.
+          </p>
         </div>
       )}
     </div>
