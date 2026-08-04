@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { buildCertificatePdf } from '@/lib/pdf';
 
-export async function GET(request: NextRequest, { params }: { params: { number: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ number: string }> }) {
+  const { number } = await params;
   const certificate = await prisma.certificate.findUnique({
-    where: { certificateNumber: params.number },
+    where: { certificateNumber: number },
     include: { application: true },
   });
 

@@ -8,11 +8,14 @@ export default async function AdminApplicationDetailPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { error?: string; decided?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string; decided?: string }>;
 }) {
+  const { id } = await params;
+  const { error, decided } = await searchParams;
+
   const application = await prisma.application.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { user: true, certificate: true },
   });
 
@@ -26,10 +29,8 @@ export default async function AdminApplicationDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      {searchParams.error && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{searchParams.error}</div>
-      )}
-      {searchParams.decided && (
+      {error && <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+      {decided && (
         <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Décision enregistrée.</div>
       )}
 

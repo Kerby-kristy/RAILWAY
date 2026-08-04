@@ -3,9 +3,10 @@ import { prisma } from '@/lib/db';
 import StatusBadge from '@/components/StatusBadge';
 import { isExpired } from '@/lib/certificate';
 
-export default async function VerifyCertificatePage({ params }: { params: { number: string } }) {
+export default async function VerifyCertificatePage({ params }: { params: Promise<{ number: string }> }) {
+  const { number } = await params;
   const certificate = await prisma.certificate.findUnique({
-    where: { certificateNumber: params.number },
+    where: { certificateNumber: number },
     include: { application: true },
   });
 
@@ -19,7 +20,7 @@ export default async function VerifyCertificatePage({ params }: { params: { numb
     <div className="mx-auto max-w-lg">
       <h1 className="text-2xl font-bold text-slate-900">Vérification de certificat</h1>
       <p className="mt-1 text-sm text-slate-600">
-        Numéro recherché : <span className="font-mono">{params.number}</span>
+        Numéro recherché : <span className="font-mono">{number}</span>
       </p>
 
       <div className="card mt-6">

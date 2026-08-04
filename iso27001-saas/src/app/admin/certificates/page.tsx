@@ -2,7 +2,12 @@ import { prisma } from '@/lib/db';
 import StatusBadge from '@/components/StatusBadge';
 import { revokeCertificateAction } from '@/actions/admin-actions';
 
-export default async function AdminCertificatesPage({ searchParams }: { searchParams: { revoked?: string } }) {
+export default async function AdminCertificatesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ revoked?: string }>;
+}) {
+  const { revoked } = await searchParams;
   const certificates = await prisma.certificate.findMany({
     orderBy: { createdAt: 'desc' },
     include: { application: true },
@@ -12,7 +17,7 @@ export default async function AdminCertificatesPage({ searchParams }: { searchPa
     <div className="space-y-4">
       <h1 className="text-2xl font-bold text-slate-900">Certificats émis</h1>
 
-      {searchParams.revoked && (
+      {revoked && (
         <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Certificat révoqué.</div>
       )}
 

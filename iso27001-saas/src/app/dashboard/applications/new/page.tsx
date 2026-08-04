@@ -2,8 +2,13 @@ import { requireUser } from '@/lib/auth';
 import { createApplicationAction } from '@/actions/application-actions';
 import { QUESTIONNAIRE_ITEMS, ANSWER_OPTIONS } from '@/lib/questionnaire';
 
-export default async function NewApplicationPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function NewApplicationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const session = await requireUser();
+  const { error } = await searchParams;
   const isCompany = session.accountType === 'COMPANY';
 
   return (
@@ -17,9 +22,7 @@ export default async function NewApplicationPage({ searchParams }: { searchParam
         </p>
       </div>
 
-      {searchParams.error && (
-        <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{searchParams.error}</div>
-      )}
+      {error && <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       <form action={createApplicationAction} encType="multipart/form-data" className="space-y-6">
         <input type="hidden" name="type" value={session.accountType} />

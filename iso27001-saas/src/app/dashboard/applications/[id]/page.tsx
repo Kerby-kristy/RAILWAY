@@ -8,13 +8,15 @@ export default async function ApplicationDetailPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { submitted?: string };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ submitted?: string }>;
 }) {
   const session = await requireUser();
+  const { id } = await params;
+  const { submitted } = await searchParams;
 
   const application = await prisma.application.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { certificate: true },
   });
 
@@ -27,7 +29,7 @@ export default async function ApplicationDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      {searchParams.submitted && (
+      {submitted && (
         <div className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
           Votre demande a bien été soumise. Un auditeur va l&apos;examiner prochainement.
         </div>

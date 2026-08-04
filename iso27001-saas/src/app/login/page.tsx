@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import { loginAction } from '@/actions/auth-actions';
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string; next?: string } }) {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; next?: string }>;
+}) {
+  const { error, next } = await searchParams;
+
   return (
     <div className="mx-auto max-w-md">
       <h1 className="text-2xl font-bold text-slate-900">Connexion</h1>
@@ -12,13 +18,11 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
         </Link>
       </p>
 
-      {searchParams.error && (
-        <div className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{searchParams.error}</div>
-      )}
+      {error && <div className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
 
       <div className="card mt-6">
         <form action={loginAction} className="space-y-4">
-          <input type="hidden" name="next" value={searchParams.next || '/dashboard'} />
+          <input type="hidden" name="next" value={next || '/dashboard'} />
           <div>
             <label className="label" htmlFor="email">
               Email
